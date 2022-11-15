@@ -14,7 +14,7 @@ int x_Arr[3] = { 0,0,0 };
 int y_Arr[3] = { 0, 0, 0 };
 Mat Frame_image;
 Mat lenna_image;
-
+Mat Fusion;
 void Affine() {
 	Mat src = imread("lenna.jpg", IMREAD_COLOR);
 	Mat dst;
@@ -29,10 +29,8 @@ void Affine() {
 	warp_mat = getAffineTransform(srcTri, dstTri);
 	warpAffine(src, dst, warp_mat, src.size());
 	resize(Frame_image, Frame_image, Size(lenna_image.cols, lenna_image.rows));
-	imshow("dst", dst);
-	imshow("frame", Frame_image);
 	double alpha, beta;
-	Mat Fusion;
+	Fusion;
 	alpha=0.4;
 	beta = (1.0 - alpha);
 	addWeighted(Frame_image, alpha, dst, beta, 0.0, Fusion);
@@ -47,8 +45,6 @@ void onMouse(int event, int x, int y, int flags, void* param) // 마우스 콜�
 		if (click_cnt < 3) {
 			x_Arr[click_cnt] = x;
 			y_Arr[click_cnt] = y;
-			printf("lenna_image.col:%d",lenna_image.cols);
-			printf("%d,(%d,%d)\n",click_cnt, x_Arr[click_cnt], y_Arr[click_cnt]);
 		}
 		if (click_cnt == 3) {
 			Affine();
@@ -66,9 +62,28 @@ int Opencv_project1() {
 	return 0;
 }
 void Opencv_project2() {
+	Mat Book = imread("book.jpg");
+	if (img.empty())return;
+	imshow("image", Book);
+	/*
+	Mat out;
+	Point2f inputp[4], outputp[4];
+	inputp[0] = Point2f(30, 81);    inputp[1] = Point2f(274, 247);
+	inputp[2] = Point2f(298, 40);  inputp[3] = Point2f(598, 138);
+	outputp[0] = Point2f(0, 0);     outputp[1] = Point2f(0, Book.rows);
+	outputp[2] = Point2f(Book.cols, 0);
+	outputp[3] = Point2f(Book.cols, Book.rows);
+
+	Mat h = getPerspectiveTransform(inputp, outputp);
+	warpPerspective(Book, out, h, Book.size());
+	imshow("Warped Image", out);
+	waitKey(0);
+
+	*/
 	printf("project2");
 }
 void OpencvSave() {
+	imwrite("C:\fusion_result1.jpg", Fusion);
 	printf("save");
 }
 
