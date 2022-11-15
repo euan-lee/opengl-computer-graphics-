@@ -10,11 +10,12 @@ int flag_checkbox = 0;
 int ang = 0;
 int click_cnt= 0;
 Mat img, roi;
-int x_Arr[3] = { 0,0,0 };
-int y_Arr[3] = { 0, 0, 0 };
+int x_Arr[4] = { 0,0,0, 0 };
+int y_Arr[4] = { 0, 0, 0,0 };
 Mat Frame_image;
 Mat lenna_image;
 Mat Fusion;
+Mat Book;
 void Affine() {
 	Mat src = imread("lenna.jpg", IMREAD_COLOR);
 	Mat dst;
@@ -37,7 +38,24 @@ void Affine() {
 	imshow("선형 합성", Fusion);
 	printf("affine");
 }
+void Distort() {
+	Mat out;
+	Point2f inputp[4], outputp[4];
+	inputp[0] = Point2f(x_Arr[0],y_Arr[0]);   
+	inputp[1] = Point2f(x_Arr[1],y_Arr[1]);
+	inputp[2] = Point2f(x_Arr[2],y_Arr[2]);
+	inputp[3] = Point2f(x_Arr[3],y_Arr[3]);
+	outputp[0] = Point2f(0, 0);  
+	outputp[1] = Point2f(0, Book.rows);
+	outputp[2] = Point2f(Book.cols, 0);
+	outputp[3] = Point2f(Book.cols, Book.rows);
 
+	Mat h = getPerspectiveTransform(inputp, outputp);
+	warpPerspective(Book, out, h, Book.size());
+	imshow("Warped Image", out);
+	waitKey(0);
+}
+int flag = 0;
 
 void onMouse(int event, int x, int y, int flags, void* param) // 마우스 콜백 함수
 {
@@ -46,8 +64,12 @@ void onMouse(int event, int x, int y, int flags, void* param) // 마우스 콜�
 			x_Arr[click_cnt] = x;
 			y_Arr[click_cnt] = y;
 		}
-		if (click_cnt == 3) {
+		if (click_cnt == 3&&flag==0) {
 			Affine();
+			click_cnt = -1;
+		}
+		if (click_cnt == 4 && flag == 1) {
+			Distort();
 			click_cnt = -1;
 		}
 		click_cnt++;
@@ -55,32 +77,24 @@ void onMouse(int event, int x, int y, int flags, void* param) // 마우스 콜�
 }
 
 int Opencv_project1() {
+	 x_Arr[4] = { 0,};
+	 y_Arr[4] = { 0, };
+	flag = 0;
 	lenna_image = imread("lenna.jpg");
 	Frame_image = imread("Frame1.jpg");
 	imshow("image", lenna_image);
 	setMouseCallback("image", onMouse);
 	return 0;
 }
-void Opencv_project2() {
-	Mat Book = imread("book.jpg");
-	if (img.empty())return;
+
+int Opencv_project2() {
+	x_Arr[4] = { 0, };
+	y_Arr[4] = { 0, };
+	flag = 1;
+	 Book = imread("NoteBook.jpg");
 	imshow("image", Book);
-	/*
-	Mat out;
-	Point2f inputp[4], outputp[4];
-	inputp[0] = Point2f(30, 81);    inputp[1] = Point2f(274, 247);
-	inputp[2] = Point2f(298, 40);  inputp[3] = Point2f(598, 138);
-	outputp[0] = Point2f(0, 0);     outputp[1] = Point2f(0, Book.rows);
-	outputp[2] = Point2f(Book.cols, 0);
-	outputp[3] = Point2f(Book.cols, Book.rows);
-
-	Mat h = getPerspectiveTransform(inputp, outputp);
-	warpPerspective(Book, out, h, Book.size());
-	imshow("Warped Image", out);
-	waitKey(0);
-
-	*/
-	printf("project2");
+	setMouseCallback("image", onMouse);
+	if (img.empty())return -1;
 }
 void OpencvSave() {
 	imwrite("C:\fusion_result1.jpg", Fusion);
