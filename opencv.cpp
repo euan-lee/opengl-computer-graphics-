@@ -7,33 +7,43 @@ using namespace std;
 GLUI_Checkbox   *checkbox;
 int   wireframe = 0;
 int flag_checkbox = 0;
-
+int ang = 0;
 int Opencv_project1() {
-	Mat image = Mat(400, 600, CV_8UC3, Scalar(0, 0, 0));
-	rectangle(image, Point(100, 100), Point(500, 300), Scalar(0, 255, 0), 5);
-	circle(image, Point(300, 200), 100, Scalar(255, 0, 0), 3);
-	imshow("Image", image);
-	waitKey(1);
-	printf("Opencv_project1");
-	return(0);
+	Mat Frame_image = imread("Frame1.jpg");
+	Mat lenna_image = imread("lenna.jpg");
+	double alpha, beta;
+	alpha = 0.4;
+	beta = (1.0 - alpha);
+	resize(Frame_image, Frame_image, Size(300, 300));
+	resize(lenna_image, lenna_image, Size(300, 300));
+	Mat Fusion;
+	addWeighted(Frame_image, alpha, lenna_image, beta, 0.0, Fusion);
+	//Fusion = Frame_image + lenna_image;
+	imshow("w", Fusion);
+	Point2f srcTri[3], dstTri[3];
+	Mat warp_mat(2, 3, CV_32FC1);
+	Mat dst;
+	srcTri[0] = Point2f(0, 0);
+	srcTri[1] = Point2f(lenna_image.cols - 1.0f, 0);
+	srcTri[2] = Point2f(0, lenna_image.rows - 1.0f);
+	dstTri[0] = Point2f(lenna_image.cols*0.0f, lenna_image.rows*0.33f);
+	dstTri[1] = Point2f(lenna_image.cols*0.85f, lenna_image.rows*0.25f);
+	dstTri[2] = Point2f(lenna_image.cols*0.15f, lenna_image.rows*0.7f);
+	warp_mat = getAffineTransform(srcTri, dstTri);
+	warpAffine(lenna_image, dst, warp_mat, lenna_image.size());
+	imshow("image", lenna_image);
+	imshow("dst", dst);
+	return 0;
 }
-int Opencv_project2() {
-	Mat img = imread("lenna.jpg");
-	if (img.empty()) {
+void Opencv_project2() {
+	Mat Frame_img = imread("Frame1.jpg");
+	if (Frame_img.empty()) {
 		printf("영상 입력 오류\n");
-		return -1;
-	}
-			imshow("img", img);
 
-		cout << "행의 수 = " << img.rows << endl;
-		cout << "열의 수 = " << img.cols << endl;
-		cout << "행렬의 크기 = " << img.size() << endl;
-		cout << "전체 화소 개수 = " << img.total() << endl;
-		cout << "한 화소 크기 = " << img.elemSize() << endl;
-		cout << "타입 = " << img.type() << endl;
-		cout << "채널 = " << img.channels() << endl;
-		waitKey(0);
-		return 0;
+	}
+	imshow("img", Frame_img);
+	waitKey(0);
+
 }
 
 void control_cb(int control)
@@ -44,6 +54,7 @@ void control_cb(int control)
 		else if (flag_checkbox == 0)flag_checkbox = 1;
 		printf("             checkbox: %d\n", checkbox->get_int_val());
 		printf("             checkbox flag: %d\n", flag_checkbox);
+		ang = 1;
 		Opencv_project2();
 	}
 	if (control == 0) {
@@ -66,5 +77,9 @@ int main()
 	checkbox = new GLUI_Checkbox(glui, "case1", &wireframe, 0, control_cb);
 	checkbox = new GLUI_Checkbox(glui, "case2", &wireframe, 1, control_cb);
 	glutMainLoop();
+	while (1) {
+		if (ang == 1)break;
+	}
+	printf("end of system!!");
 	return 0;
 }
