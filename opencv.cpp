@@ -17,6 +17,7 @@ Mat lenna_image;
 Mat Fusion;
 Mat Book;
 Mat Undistorted;
+
 void Affine() {
 	Mat src = imread("lenna.jpg", IMREAD_COLOR);
 	resize(src, src, Size(Frame_image.cols, Frame_image.rows));
@@ -32,8 +33,7 @@ void Affine() {
 	warp_mat = getAffineTransform(srcTri, dstTri);
 	warpAffine(src, dst, warp_mat, src.size());
 	double alpha, beta;
-	Fusion;
-	alpha=0.4;
+	alpha=0.5;
 	beta = (1.0 - alpha);
 	addWeighted(Frame_image, alpha, dst, beta, 0.0, Fusion);
 	imshow("선형 합성", Fusion);
@@ -61,7 +61,7 @@ void onMouse(int event, int x, int y, int flags, void* param) // 마우스 콜�
 			x_Arr[click_cnt] = x;
 			y_Arr[click_cnt] = y;
 		}
-		printf("x:%d,y:%d", x_Arr[click_cnt], y_Arr[click_cnt]);
+
 		if (click_cnt == 3&&flag==0) {
 			Affine();
 			click_cnt = -1;
@@ -77,7 +77,6 @@ void onMouse2(int event, int x, int y, int flags, void* param) // 마우스 콜�
 		if (click_cnt < 4) {
 			x_Arr[click_cnt] = x;
 			y_Arr[click_cnt] = y;
-			printf("x:%d,y:%d", x_Arr[click_cnt], y_Arr[click_cnt]);
 		}
 		if (click_cnt == 4 ) {
 			Distort();
@@ -108,6 +107,9 @@ int Opencv_project2() {
 }
 void OpencvSave() {
 	imwrite("C:\fusion_result1.jpg", Fusion);
+	printf("save");
+}
+void OpencvSave2() {
 	imwrite("C:\ undistorted_result1.jpg", Undistorted);
 	printf("save");
 }
@@ -131,6 +133,9 @@ void control_cb(int control)
 	if (control == 3) {
 		Exit();
 	}
+	if (control == 4) {
+		OpencvSave2();
+	}
 }
 
 int main()
@@ -145,6 +150,7 @@ int main()
 	checkbox = new GLUI_Checkbox(glui, "assignment1", &wireframe, 0, control_cb);
 	checkbox = new GLUI_Checkbox(glui, "assignment2", &wireframe, 1, control_cb);
 	checkbox = new GLUI_Checkbox(glui, "save", &wireframe, 2, control_cb);
+	checkbox = new GLUI_Checkbox(glui, "save2", &wireframe, 4 , control_cb);
 	checkbox = new GLUI_Checkbox(glui, "exit", &wireframe, 3, control_cb);
 	glutMainLoop();
 	return 0;
