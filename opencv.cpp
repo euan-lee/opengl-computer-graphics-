@@ -16,8 +16,10 @@ Mat Frame_image;
 Mat lenna_image;
 Mat Fusion;
 Mat Book;
+Mat Undistorted;
 void Affine() {
 	Mat src = imread("lenna.jpg", IMREAD_COLOR);
+	resize(src, src, Size(Frame_image.cols, Frame_image.rows));
 	Mat dst;
 	Point2f srcTri[3], dstTri[3];
 	Mat warp_mat(2, 3, CV_32FC1);
@@ -29,7 +31,6 @@ void Affine() {
 	dstTri[2] = Point2f(x_Arr[2], y_Arr[2]);
 	warp_mat = getAffineTransform(srcTri, dstTri);
 	warpAffine(src, dst, warp_mat, src.size());
-	resize(Frame_image, Frame_image, Size(lenna_image.cols, lenna_image.rows));
 	double alpha, beta;
 	Fusion;
 	alpha=0.4;
@@ -39,38 +40,47 @@ void Affine() {
 	printf("affine");
 }
 void Distort() {
-	Mat out;
+	
 	Point2f inputp[4], outputp[4];
-	inputp[0] = Point2f(x_Arr[0],y_Arr[0]);   
-	inputp[1] = Point2f(x_Arr[1],y_Arr[1]);
-	inputp[2] = Point2f(x_Arr[2],y_Arr[2]);
-	inputp[3] = Point2f(x_Arr[3],y_Arr[3]);
+	inputp[0] = Point2f(x_Arr[0], y_Arr[0]);    inputp[1] = Point2f(x_Arr[2], y_Arr[2]);
+	inputp[2] = Point2f(x_Arr[1], y_Arr[1]);  inputp[3] = Point2f(x_Arr[3], y_Arr[3]);
 	outputp[0] = Point2f(0, 0);  
 	outputp[1] = Point2f(0, Book.rows);
 	outputp[2] = Point2f(Book.cols, 0);
 	outputp[3] = Point2f(Book.cols, Book.rows);
-
 	Mat h = getPerspectiveTransform(inputp, outputp);
-	warpPerspective(Book, out, h, Book.size());
-	imshow("Warped Image", out);
-	waitKey(0);
+	warpPerspective(Book, Undistorted, h, Book.size());
+	imshow("Warped Image", Undistorted);
 }
 int flag = 0;
 
 void onMouse(int event, int x, int y, int flags, void* param) // 마우스 콜백 함수
-{
+{	
 	if (event == EVENT_LBUTTONDOWN) {
 		if (click_cnt < 3) {
 			x_Arr[click_cnt] = x;
 			y_Arr[click_cnt] = y;
 		}
+		printf("x:%d,y:%d", x_Arr[click_cnt], y_Arr[click_cnt]);
 		if (click_cnt == 3&&flag==0) {
 			Affine();
 			click_cnt = -1;
 		}
-		if (click_cnt == 4 && flag == 1) {
+		
+		click_cnt++;
+	}
+}
+
+void onMouse2(int event, int x, int y, int flags, void* param) // 마우스 콜백 함수
+{
+	if (event == EVENT_LBUTTONDOWN) {
+		if (click_cnt < 4) {
+			x_Arr[click_cnt] = x;
+			y_Arr[click_cnt] = y;
+			printf("x:%d,y:%d", x_Arr[click_cnt], y_Arr[click_cnt]);
+		}
+		if (click_cnt == 4 ) {
 			Distort();
-			click_cnt = -1;
 		}
 		click_cnt++;
 	}
@@ -82,7 +92,7 @@ int Opencv_project1() {
 	flag = 0;
 	lenna_image = imread("lenna.jpg");
 	Frame_image = imread("Frame1.jpg");
-	imshow("image", lenna_image);
+	imshow("image", Frame_image);
 	setMouseCallback("image", onMouse);
 	return 0;
 }
@@ -93,11 +103,12 @@ int Opencv_project2() {
 	flag = 1;
 	 Book = imread("NoteBook.jpg");
 	imshow("image", Book);
-	setMouseCallback("image", onMouse);
+	setMouseCallback("image", onMouse2);
 	if (img.empty())return -1;
 }
 void OpencvSave() {
 	imwrite("C:\fusion_result1.jpg", Fusion);
+	imwrite("C:\ undistorted_result1.jpg", Undistorted);
 	printf("save");
 }
 
