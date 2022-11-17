@@ -52,7 +52,6 @@ void Distort() {
 	warpPerspective(Book, Undistorted, h, Book.size());
 	imshow("Warped Image", Undistorted);
 }
-int flag = 0;
 
 void onMouse(int event, int x, int y, int flags, void* param) // 마우스 콜백 함수
 {	
@@ -62,7 +61,7 @@ void onMouse(int event, int x, int y, int flags, void* param) // 마우스 콜�
 			y_Arr[click_cnt] = y;
 		}
 
-		if (click_cnt == 3&&flag==0) {
+		if (click_cnt == 3) {
 			Affine();
 			click_cnt = -1;
 		}
@@ -80,6 +79,7 @@ void onMouse2(int event, int x, int y, int flags, void* param) // 마우스 콜�
 		}
 		if (click_cnt == 4 ) {
 			Distort();
+			click_cnt = -1;
 		}
 		click_cnt++;
 	}
@@ -88,7 +88,6 @@ void onMouse2(int event, int x, int y, int flags, void* param) // 마우스 콜�
 int Opencv_project1() {
 	 x_Arr[4] = { 0,};
 	 y_Arr[4] = { 0, };
-	flag = 0;
 	lenna_image = imread("lenna.jpg");
 	Frame_image = imread("Frame1.jpg");
 	imshow("image", Frame_image);
@@ -99,25 +98,23 @@ int Opencv_project1() {
 int Opencv_project2() {
 	x_Arr[4] = { 0, };
 	y_Arr[4] = { 0, };
-	flag = 1;
 	 Book = imread("NoteBook.jpg");
 	imshow("image", Book);
 	setMouseCallback("image", onMouse2);
 	if (img.empty())return -1;
 }
 void OpencvSave() {
-	imwrite("C:\fusion_result1.jpg", Fusion);
+	imwrite("fusion_result1.jpg", Fusion);
 	printf("save");
 }
 void OpencvSave2() {
-	imwrite("C:\ undistorted_result1.jpg", Undistorted);
+	imwrite("undistorted_result1.jpg", Undistorted);
 	printf("save");
 }
 
 
 void Exit() {
 	exit(0);
-	printf("exit");
 }
 void control_cb(int control)
 {
