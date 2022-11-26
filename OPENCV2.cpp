@@ -9,82 +9,84 @@ int   wireframe = 0;
 int flag_checkbox = 0;
 int ang = 0;
 int click_cnt= 0;
+int width,height;
+void Camera(int x) {
+	printf("x:%d\n",x);
+};
 
-void onMouse(int event, int x, int y, int flags, void* param) // 마우스 콜백 함수
-{	
-	if (event == EVENT_LBUTTONDOWN) {
-		if (click_cnt < 3) {
-			//x_Arr[click_cnt] = x;
-			//y_Arr[click_cnt] = y;
-		}
+void video(int x) {
+	printf("video:%d\n", x);
+};
 
-		if (click_cnt == 3) {
-			//Affine();
-			click_cnt = -1;
-		}
-		
-		click_cnt++;
-	}
-}
+void WidthCrt(int x) {
+	
+	printf("video width:%d\n", width);
+};
 
+void HeightCrt(int x) {
+	printf("video height:%d\n", height);
 
-void OpencvSave() {
+};
+void Save(int x) {
+	//imwrite("fusion_result1.jpg", Fusion);
 	printf("save");
 }
 
-void Exit() {
-	exit(0);
+void ToGrayScale(int x) {
+	printf("ToGrayScale");
 }
-void control_cb(int control)
-{
-	if (control == 0) {
-		//Opencv_project1();
-	}
-	if (control == 1) {
-	//	Opencv_project2();
-	}
-	if (control == 2) {
-		OpencvSave();
-	}
-	if (control == 3) {
-		Exit();
-	}
-	if (control == 4) {
-		//OpencvSave2();
-	}
+void GaussianLow(int x) {
+	printf("Gaussian Low!\n");
+}
+void HistogramEquation(int x) {
+	printf("Gaussian Low!\n");
+}
+void None(int x) {
+	printf("None!\n");
+}
+void Canny(int x) {
+	printf("None!\n");
+}
+void Threshold(int x) {
+	printf("None!\n");
 }
 
+void Exit(int x) {
+	printf("exit!\n");
+	exit(0);
+}
 int main()
 {
+
+	GLUI_Spinner* spin_w;
+	GLUI_Spinner* spin_h;
 	GLUI *glui = GLUI_Master.create_glui("GLUI", 0, 400, 200);
 	GLUI_Master.set_glutIdleFunc(NULL);
 	int main_window = glui->get_glut_window_id();
 	new GLUI_StaticText(glui, "컴비전 과제");
 	new GLUI_Separator(glui);
+	GLUI_Button *btn11 = glui->add_button("Camera", 1, Camera);
+	GLUI_Button *btn12 = glui->add_button("video", 1, video);
+	btn12->set_name("Camera");
+	btn12->set_w(20);
+	btn12->set_h(20);
+	spin_w = glui->add_spinner("1", GLUI_SPINNER_INT,&width, 0, WidthCrt);
+	spin_w->set_int_limits(10, 800, GLUI_LIMIT_CLAMP);
+	spin_w->set_speed(0.0001);
+	spin_h = glui->add_spinner("1", GLUI_SPINNER_INT, &height, 0, HeightCrt);
+	spin_h->set_int_limits(10, 800, GLUI_LIMIT_CLAMP);
+	spin_h->set_speed(0.0001);
+	GLUI_Checkbox *btn13 = glui->add_checkbox("save", &wireframe, 0, Save);
 
-	GLUI_Panel* drawPanel = glui->add_panel("");
-	glui->add_checkbox_to_panel(drawPanel, "Video File", &wireframe, 3, control_cb);
-	glui->add_checkbox_to_panel(drawPanel, "Camera", &wireframe, 3, control_cb);
-	glui->add_button("FileOpen", 0, (GLUI_Update_CB)exit);
-	glui->add_button("Stop", 0, (GLUI_Update_CB)exit);
-	GLUI_Panel* drawPanel2 = glui->add_panel("");
-	glui->add_checkbox_to_panel(drawPanel2, "width", &wireframe);
+	GLUI_Checkbox *btn14 = glui->add_checkbox("ToGrayScale", &wireframe, 0, ToGrayScale);
 	new GLUI_Separator(glui);
-	glui->add_rollout_to_panel(drawPanel2, "width1", 1)
-	glui->add_spinner_to_panel("height",GLUI_Spinner_INT,3,control_cb);
-	//spinner->set_int_limits(3, 60);
-	//spinner->set_alignment(GLUI_ALIGN_RIGHT);
-	checkbox = new GLUI_Checkbox(glui, "save", &wireframe, 3, control_cb);
-	checkbox = new GLUI_Checkbox(glui, "ToGrayScale", &wireframe, 3, control_cb);
+	GLUI_Checkbox *btn15 = glui->add_checkbox("Gaussian Low", &wireframe, 1, GaussianLow);
+	GLUI_Checkbox *btn16 = glui->add_checkbox("Histogram Equation", &wireframe, 1, HistogramEquation);
 	new GLUI_Separator(glui);
-	checkbox = new GLUI_Checkbox(glui, "Gaussian Low", &wireframe, 3, control_cb);
-	checkbox = new GLUI_Checkbox(glui, "Histogram Equation", &wireframe, 3, control_cb);
-	new GLUI_Separator(glui);
-	checkbox = new GLUI_Checkbox(glui, "Canny", &wireframe, 3, control_cb);
-	checkbox = new GLUI_Checkbox(glui, "Threshold", &wireframe, 3, control_cb);
-	checkbox = new GLUI_Checkbox(glui, "None", &wireframe, 3, control_cb);
-	//스크롤 바 추가
-	glui->add_button("Quit", 0, (GLUI_Update_CB)exit);
+	GLUI_Checkbox *btn17 = glui->add_checkbox("Canny", &wireframe, 1, Canny);
+	GLUI_Checkbox *btn18 = glui->add_checkbox("Threshold", &wireframe, 1, Threshold);
+	GLUI_Checkbox *btn19 = glui->add_checkbox("None", &wireframe, 1, None);
+	GLUI_Checkbox *btn20 = glui->add_checkbox("Exit", &wireframe, 1, Exit);
 	glutMainLoop();
 	return 0;
 }
