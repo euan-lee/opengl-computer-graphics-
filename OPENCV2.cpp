@@ -22,6 +22,7 @@ int GaussianLow_flag = 0;
 int Histogram_flag = 0;
 int Canny_flag = 0;
 int Threshold_flag = 0;
+int save_flag = 0;
 Mat img;
 Mat img_cloned;
 
@@ -32,6 +33,7 @@ void Camera(int x) {
 	btn1->set_name("camera running");
 	printf(" Camera\n");
 	VideoCapture cap(0);
+	VideoWriter  save;
 
 	if (!cap.isOpened())
 	{
@@ -39,10 +41,13 @@ void Camera(int x) {
 		return ;
 	}
 
-	int count = 0;
+
+
+	if (save_flag == 1) {
+		
+	}
 	while (1)
 	{
-		count++;
 		cap >> img;
 		img_cloned = img.clone();
 		if (vid_camera_flag == 0) {
@@ -78,6 +83,9 @@ void Camera(int x) {
 		img_cloned.resize(height, width);
 		imshow("camera img", img);
 		imshow("camera img2", img_cloned);
+		if (save_flag == 1) {
+			save << img_cloned; // 프레임을 동영상으로 저장
+		}
 		if (waitKey(10) == 27)
 			break;
 	}
@@ -111,6 +119,13 @@ void HeightCrt(int x) {
 };
 
 void Save(int x) {
+	if (save_flag == 0) {
+
+		save_flag = 1;
+	}
+	else {
+		save_flag = 0;
+	}
 	btn1->set_name("FileOpen");
 	//imwrite("fusion_result1.jpg", Fusion);
 	printf("save");
