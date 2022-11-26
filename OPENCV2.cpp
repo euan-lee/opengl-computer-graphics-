@@ -57,9 +57,7 @@ void Camera(int x) {
 		}
 
 		if (GaussianLow_flag == 1 && Histogram_flag == 0) {
-			int sigma = 4;
-			GaussianBlur(img_cloned, img_cloned, Size(), (double)sigma);
-		//do gausian
+			GaussianBlur(img_cloned, img_cloned, Size(7, 7), 0);
 		}
 
 		if (Histogram_flag == 1&& GaussianLow_flag == 0) {
@@ -71,8 +69,8 @@ void Camera(int x) {
 			return;
 		}
 		
-		if (Canny_flag == 1&& Threshold_flag == 0) {
-			//Canny
+		if (Canny_flag == 1&& Threshold_flag == 0) {//Canny
+			Canny(img_cloned, img_cloned, 100, 150);
 		}
 		if (Threshold_flag == 1&& Canny_flag == 0) {//Threshold
 			threshold(img_cloned,img_cloned, Threshold_val, 255, THRESH_BINARY);
@@ -175,9 +173,11 @@ void Threshold(int x) {
 		Threshold_flag = 0;
 	}
 }
-	void Threshold_view(int x) {
-		printf("Threshold_val:%d\n",Threshold_val);
-	}
+
+void Threshold_view(int x) {
+	printf("Threshold_val:%d\n",Threshold_val);
+}
+
 void Exit(int x) {
 	printf("exit!\n");
 	exit(0);
