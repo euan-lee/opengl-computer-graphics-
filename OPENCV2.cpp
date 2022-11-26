@@ -23,6 +23,9 @@ int Histogram_flag = 0;
 int Canny_flag = 0;
 int Threshold_flag = 0;
 int save_flag = 0;
+double fps = 30.0;
+int fourcc = VideoWriter::fourcc('W', 'M', 'V', '1'); // 동영상 사용시 저장할 코덱을 지정
+VideoWriter outputVideo; // Videowirter  객체 생성
 Mat img;
 Mat img_cloned;
 
@@ -44,13 +47,15 @@ void Camera(int x) {
 
 
 	if (save_flag == 1) {
-		
+		outputVideo.open("output.avi", fourcc, fps, Size(width, height), true);
 	}
 	while (1)
 	{
 		cap >> img;
 		img_cloned = img.clone();
 		if (vid_camera_flag == 0) {
+			cap.release();
+			outputVideo.release();
 			break;
 		}
 		if (ToGrayScale_flag == 1) {//img_cloned을 회색으로
@@ -84,7 +89,7 @@ void Camera(int x) {
 		imshow("camera img", img);
 		imshow("camera img2", img_cloned);
 		if (save_flag == 1) {
-			save << img_cloned; // 프레임을 동영상으로 저장
+			outputVideo.write(img_cloned);
 		}
 		if (waitKey(10) == 27)
 			break;
