@@ -13,8 +13,8 @@ int flag_checkbox = 0;
 int ang = 0;
 int click_cnt= 0;
 int Threshold_val;
-int width = 20;
-int height = 20;
+int width = 640;
+int height = 480;
 int   obj = 0;
 int vid_camera_flag = 0;
 int ToGrayScale_flag = 0;
@@ -24,14 +24,12 @@ int Canny_flag = 0;
 int Threshold_flag = 0;
 int save_flag = 0;
 double fps = 30.0;
-int fourcc = VideoWriter::fourcc('W', 'M', 'V', '1'); // 동영상 사용시 저장할 코덱을 지정
+int fourcc = VideoWriter::fourcc('D', 'I', 'V', '3'); // 동영상 사용시 저장할 코덱을 지정
 VideoWriter outputVideo; // Videowirter  객체 생성
 Mat img;
 Mat img_cloned;
 
 void Camera(int x) {
-	width = 200;
-	height = 200;
 	vid_camera_flag=1;
 	btn1->set_name("camera running");
 	printf(" Camera\n");
@@ -43,8 +41,6 @@ void Camera(int x) {
 		printf("Can't open the camera");
 		return ;
 	}
-
-
 
 	if (save_flag == 1) {
 		outputVideo.open("output2.WMV", fourcc, fps, Size( height, width), true);
@@ -61,17 +57,17 @@ void Camera(int x) {
 		if (ToGrayScale_flag == 1) {//img_cloned을 회색으로
 			cvtColor(img_cloned, img_cloned, COLOR_BGR2GRAY);
 		}
-		if (Histogram_flag == 1 && GaussianLow_flag == 1) {
-			printf("Histogram ,GaussianLow 둘중 하나만 골라주세요!\n");
-			return;
+
+		if (GaussianLow_flag == 1) {
+			Mat resultGaussianLow;
+			GaussianBlur(img_cloned, resultGaussianLow, Size(7, 7), 0);
+			img_cloned=resultGaussianLow.clone();
 		}
 
-		if (GaussianLow_flag == 1 && Histogram_flag == 0) {
-			GaussianBlur(img_cloned, img_cloned, Size(7, 7), 0);
-		}
-
-		if (Histogram_flag == 1&& GaussianLow_flag == 0) {
-			equalizeHist(img_cloned, img_cloned);
+		if (Histogram_flag == 1) {
+			Mat Histogram;
+			equalizeHist(img_cloned, Histogram);
+			img_cloned=Histogram.clone();
 		}
 
 		if (Canny_flag == 1 && Threshold_flag == 1) {
@@ -80,10 +76,14 @@ void Camera(int x) {
 		}
 		
 		if (Canny_flag == 1&& Threshold_flag == 0) {//Canny
-			Canny(img_cloned, img_cloned, 100, 150);
+			Mat resultCanny;
+			Canny(img_cloned, resultCanny, 100, 150);
+			img_cloned = resultCanny.clone();
 		}
 		if (Threshold_flag == 1&& Canny_flag == 0) {//Threshold
-			threshold(img_cloned,img_cloned, Threshold_val, 255, THRESH_BINARY);
+			Mat resultTH;
+			threshold(img_cloned, resultTH, Threshold_val, 255, THRESH_BINARY);
+			img_cloned = resultTH.clone();
 		}
 		img_cloned.resize(height, width);
 		imshow("camera img", img);
@@ -167,9 +167,6 @@ void HistogramEquation(int x) {
 	printf("Histogram_flag!\n");
 }
 void None(int x) {
-	ToGrayScale_flag = 0;
-	GaussianLow_flag = 0;
-	Histogram_flag = 0;
 	Canny_flag = 0;
 	Threshold_flag = 0;
 	printf("None!\n");
